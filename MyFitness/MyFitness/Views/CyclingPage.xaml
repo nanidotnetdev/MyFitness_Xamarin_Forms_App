@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Title="{Binding Title}"
+             x:Class="MyFitness.Views.CyclingPage">
+    <ContentPage.Content>
+        <StackLayout>
+            <Button x:Name="btn_Tracking" Command="{Binding TrackingCommand}" Text="{Binding TrackingButtonLabel}"/>
+            <RefreshView>
+                <ListView x:Name="PositionCollectionView" 
+                          HasUnevenRows="True"
+                          ItemsSource="{Binding Positions, Mode=TwoWay}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout 
+                                    Orientation="Vertical" 
+                                    Padding="10">
+                                    <Label Text="{Binding Timestamp }" />
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label Text="{Binding Latitude }"/>
+                                        <Label Text="{Binding Longitude}"/>
+                                    </StackLayout>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </RefreshView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
