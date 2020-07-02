@@ -81,16 +81,6 @@ namespace MyFitness.Repository
         {
             return Database.DeleteAsync(item);
         }
-
-        public async void SaveRoute(Polyline polyLine)
-        {
-            var route = new Route
-            {
-                Value = JsonConvert.SerializeObject(polyLine)
-            };
-
-            await SaveItemAsync(route);
-        }
     }
 
     public static class TaskExtensions

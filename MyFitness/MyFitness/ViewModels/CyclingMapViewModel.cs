@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using MyFitness.Models;
 using MyFitness.Repository;
 using MyFitness.Utilities;
+using Newtonsoft.Json;
 using Plugin.Geolocator;
 using Plugin.Geolocator.Abstractions;
 using Plugin.Permissions.Abstractions;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.GoogleMaps;
 using Position = Xamarin.Forms.GoogleMaps.Position;
 using GeoPosition = Plugin.Geolocator.Abstractions.Position;
+using Map = Xamarin.Forms.GoogleMaps.Map;
 
 namespace MyFitness.ViewModels
 {
@@ -45,7 +49,7 @@ namespace MyFitness.ViewModels
             set => SetProperty(ref _positions, value);
         }
 
-        public Map MapView { get; private set; }
+        public Map MapView { get; }
 
         private MyFitnessDatabase repository;
 
@@ -86,6 +90,10 @@ namespace MyFitness.ViewModels
             MapView.MoveToRegion(MapSpan.FromCenterAndRadius(new Position(position.Latitude, position.Longitude), Distance.FromKilometers(1)));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private async Task ExecuteTrackingCommand()
         {
             try
@@ -122,29 +130,59 @@ namespace MyFitness.ViewModels
             }
         }
 
+        /// <summary>
+        /// save last path
+        /// </summary>
         private void SaveLastPath()
         {
-            //save last path
-            List<Position> geoPositions = Positions
-                .Select(p => new Position(p.Latitude, p.Longitude)).ToList();
-
-            Random rnd = new Random();
-
-            Polyline route = new Polyline
+            if (Positions.Count > 5)
             {
-                StrokeColor = Color.FromRgba(rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256)),
-                StrokeWidth = 8
-            };
+                List<Position> geoPositions = Positions
+                    .Select(p => new Position(p.Latitude, p.Longitude)).ToList();
 
-            route.Positions.AddRange(geoPositions);
+                Random rnd = new Random();
 
-            MapView.Polylines.Add(route);
+                Polyline route = new Polyline
+                {
+                    StrokeColor = Color.FromRgba(rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256)),
+                    StrokeWidth = 8
+                };
 
-            repository.SaveRoute(route);
+                route.Positions.AddRange(geoPositions);
+
+                MapView.Polylines.Add(route);
+
+                Route viewModel = new Route
+                {
+                    Value = JsonConvert.SerializeObject(route)
+                };
+
+                repository.SaveItemAsync(viewModel);
+            }
 
             Positions.Clear();
         }
 
+        /// <summary>
+        /// Calculate Route Distance.
+        /// not a driving directions
+        /// </summary>
+        /// <returns></returns>
+        private double CalculateDistance()
+        {
+            var start = Positions.OrderBy(p => p.Timestamp).First();
+            var destination = Positions.OrderBy(p => p.Timestamp).Last();
+
+            var distance = Location.CalculateDistance(start.Latitude, start.Longitude,
+                destination.Latitude, destination.Longitude, DistanceUnits.Miles);
+
+            return distance;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<GeoPosition> GetCurrentLocation()
         {
             var position = await _locator.GetPositionAsync(TimeSpan.FromSeconds(10));
@@ -153,6 +191,11 @@ namespace MyFitness.ViewModels
             return position;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void CrossGeolocator_Current_PositionChanged(object sender, PositionEventArgs e)
         {
             Device.BeginInvokeOnMainThread(() =>
