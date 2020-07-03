@@ -110,6 +110,8 @@ namespace MyFitness.ViewModels
                     TrackingEnabled = false;
                     TrackingButtonLabel = "Start Tracking";
 
+                    await _locator.StopListeningAsync();
+
                     _locator.PositionChanged -= CrossGeolocator_Current_PositionChanged;
 
                     SaveLastPath();
@@ -121,6 +123,8 @@ namespace MyFitness.ViewModels
 
                     //new path
                     Positions.Add(position);
+
+                    await _locator.StartListeningAsync(TimeSpan.FromSeconds(5), 5);
 
                     _locator.PositionChanged += CrossGeolocator_Current_PositionChanged;
                 }
@@ -187,7 +191,6 @@ namespace MyFitness.ViewModels
         public async Task<GeoPosition> GetCurrentLocation()
         {
             var position = await _locator.GetPositionAsync(TimeSpan.FromSeconds(10));
-            //var position = new GeoPosition(47.6381401, -122.1317367);
 
             return position;
         }
