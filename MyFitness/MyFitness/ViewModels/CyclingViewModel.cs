@@ -5,7 +5,6 @@ using MyFitness.Utilities;
 using Plugin.Geolocator;
 using Plugin.Geolocator.Abstractions;
 using Plugin.Permissions;
-using Plugin.Permissions.Abstractions;
 using Xamarin.Forms;
 
 namespace MyFitness.ViewModels
@@ -20,17 +19,16 @@ namespace MyFitness.ViewModels
 
         public bool TrackingEnabled
         {
-            get { return _trackingEnabled; }
-            set { SetProperty(ref _trackingEnabled, value); }
+            get => _trackingEnabled;
+            set => SetProperty(ref _trackingEnabled, value);
         }
 
         private string _trackingButtonLabel;
 
-        public string TrackingButtonLabel { get { return _trackingButtonLabel; } 
-            set
-            {
-                SetProperty(ref _trackingButtonLabel, value);
-            }
+        public string TrackingButtonLabel 
+        { 
+            get => _trackingButtonLabel;
+            set => SetProperty(ref _trackingButtonLabel, value);
         }
 
         private IGeolocator _locator;
@@ -60,6 +58,9 @@ namespace MyFitness.ViewModels
                 {
                     TrackingEnabled = false;
                     TrackingButtonLabel = "Start Tracking";
+
+                    await _locator.StopListeningAsync();
+
                     _locator.PositionChanged -= CrossGeolocator_Current_PositionChanged;
                 }
                 else
@@ -78,6 +79,8 @@ namespace MyFitness.ViewModels
 
                     Positions.Add(position);
 
+                    await _locator.StartListeningAsync(TimeSpan.FromSeconds(5), 5);
+
                     _locator.PositionChanged += CrossGeolocator_Current_PositionChanged;
                 }
             }
@@ -93,11 +96,6 @@ namespace MyFitness.ViewModels
             {
                 var position = e.Position;
                 Positions.Add(position);
-                //count++;
-                //LabelCount.Text = $"{count} updates";
-                //labelGPSTrack.Text = string.Format("Time: {0} \nLat: {1} \nLong: {2} \nAltitude: {3} \nAltitude Accuracy: {4} \nAccuracy: {5} \nHeading: {6} \nSpeed: {7}",
-                //    position.Timestamp, position.Latitude, position.Longitude,
-                //    position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed);
             });
         }
     }
