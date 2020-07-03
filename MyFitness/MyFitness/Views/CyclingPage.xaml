@@ -11,7 +11,7 @@
             <Button x:Name="btn_Tracking" Command="{Binding TrackingCommand}" Text="{Binding TrackingButtonLabel}"/>
             <RefreshView>
                 <ListView x:Name="PositionCollectionView" 
-                          HasUnevenRows="True"
+                          HasUnevenRows="True" RefreshAllowed="False"
                           ItemsSource="{Binding Positions, Mode=TwoWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate>

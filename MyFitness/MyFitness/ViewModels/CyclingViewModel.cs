@@ -65,7 +65,7 @@ namespace MyFitness.ViewModels
                 }
                 else
                 {
-                    var position = await _locator.GetPositionAsync();
+                    var position = await _locator.GetPositionAsync(TimeSpan.FromSeconds(10));
 
                     if (position == null)
                     {

@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Plugin.Geolocator;
 using Plugin.Geolocator.Abstractions;
 using Plugin.Permissions;
-using Plugin.Permissions.Abstractions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.GoogleMaps;
@@ -206,11 +205,6 @@ namespace MyFitness.ViewModels
             {
                 var position = e.Position;
                 Positions.Add(position);
-                //count++;
-                //LabelCount.Text = $"{count} updates";
-                //labelGPSTrack.Text = string.Format("Time: {0} \nLat: {1} \nLong: {2} \nAltitude: {3} \nAltitude Accuracy: {4} \nAccuracy: {5} \nHeading: {6} \nSpeed: {7}",
-                //    position.Timestamp, position.Latitude, position.Longitude,
-                //    position.Altitude, position.AltitudeAccuracy, position.Accuracy, position.Heading, position.Speed);
             });
         }
     }
