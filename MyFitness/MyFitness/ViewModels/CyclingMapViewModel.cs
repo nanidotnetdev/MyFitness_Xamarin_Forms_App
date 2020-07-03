@@ -9,6 +9,7 @@ using MyFitness.Utilities;
 using Newtonsoft.Json;
 using Plugin.Geolocator;
 using Plugin.Geolocator.Abstractions;
+using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -98,7 +99,7 @@ namespace MyFitness.ViewModels
         {
             try
             {
-                var hasPermission = await XamUtils.CheckPermissions(Permission.Location);
+                var hasPermission = await XamUtils.CheckPermissions<LocationWhenInUsePermission>();
                 if (!hasPermission)
                     return;
 

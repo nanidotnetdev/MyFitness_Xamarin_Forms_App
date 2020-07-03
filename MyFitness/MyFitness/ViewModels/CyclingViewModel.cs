@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MyFitness.Utilities;
 using Plugin.Geolocator;
 using Plugin.Geolocator.Abstractions;
+using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
 using Xamarin.Forms;
 
@@ -51,7 +52,7 @@ namespace MyFitness.ViewModels
         {
             try
             {
-                var hasPermission = await XamUtils.CheckPermissions(Permission.Location);
+                var hasPermission = await XamUtils.CheckPermissions<LocationWhenInUsePermission>();
                 if (!hasPermission)
                     return;
 
@@ -63,8 +64,7 @@ namespace MyFitness.ViewModels
                 }
                 else
                 {
-                    //var position = await locator.GetPositionAsync();
-                    var position = new Position(44.986656, -93.258133);
+                    var position = await _locator.GetPositionAsync();
 
                     if (position == null)
                     {

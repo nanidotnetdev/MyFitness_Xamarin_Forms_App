@@ -7,17 +7,17 @@ namespace MyFitness.Utilities
 {
     public static class XamUtils
     {
-        public static async Task<bool> CheckPermissions(Permission permission)
+        public static async Task<bool> CheckPermissions<T>() where T: BasePermission, new()
         {
-            var permissionStatus = await CrossPermissions.Current.CheckPermissionStatusAsync(permission);
+            var permissionStatus = await CrossPermissions.Current.CheckPermissionStatusAsync<T>();
+
             bool request = false;
             if (permissionStatus == PermissionStatus.Denied)
             {
                 if (Device.RuntimePlatform == Device.iOS)
                 {
-
-                    var title = $"{permission} Permission";
-                    var question = $"To use this plugin the {permission} permission is required. Please go into Settings and turn on {permission} for the app.";
+                    var title = $"{nameof(T)} Permission";
+                    var question = $"To use this plugin the {nameof(T)} permission is required. Please go into Settings and turn on {nameof(T)} for the app.";
                     var positive = "Settings";
                     var negative = "Maybe Later";
                     var task = Application.Current?.MainPage?.DisplayAlert(title, question, positive, negative);
@@ -39,11 +39,12 @@ namespace MyFitness.Utilities
 
             if (request || permissionStatus != PermissionStatus.Granted)
             {
-                var newStatus = await CrossPermissions.Current.RequestPermissionsAsync(permission);
-                if (newStatus.ContainsKey(permission) && newStatus[permission] != PermissionStatus.Granted)
+                var newStatus = await CrossPermissions.Current.RequestPermissionAsync<T>();
+
+                if (newStatus != PermissionStatus.Granted)
                 {
-                    var title = $"{permission} Permission";
-                    var question = $"To use the plugin the {permission} permission is required.";
+                    var title = $"{nameof(T)} Permission";
+                    var question = $"To use the plugin the {nameof(T)} permission is required.";
                     var positive = "Settings";
                     var negative = "Maybe Later";
                     var task = Application.Current?.MainPage?.DisplayAlert(title, question, positive, negative);
