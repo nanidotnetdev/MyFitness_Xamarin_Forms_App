@@ -79,7 +79,13 @@ namespace MyFitness.ViewModels
 
                     Positions.Add(position);
 
-                    await _locator.StartListeningAsync(TimeSpan.FromSeconds(5), 5);
+                    var listener = new ListenerSettings
+                    {
+                        ActivityType = ActivityType.AutomotiveNavigation,
+                        AllowBackgroundUpdates = true
+                    };
+
+                    await _locator.StartListeningAsync(TimeSpan.FromSeconds(2), 1, true, listener);
 
                     _locator.PositionChanged += CrossGeolocator_Current_PositionChanged;
                 }

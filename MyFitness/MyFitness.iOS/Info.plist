@@ -32,9 +32,14 @@
 	<string>MyFitness</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
-  <key>NSLocationAlwaysUsageDescription</key>
-  <string>Always allow the location?</string>
-  <key>NSLocationWhenInUseUsageDescription</key>
-  <string>Allow location when the application is in use?</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Always allow the location?</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow location when the application is in use?</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>processing</string>
+	</array>
 </dict>
 </plist>

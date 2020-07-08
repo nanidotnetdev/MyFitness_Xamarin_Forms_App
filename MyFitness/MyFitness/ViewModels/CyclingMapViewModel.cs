@@ -123,7 +123,13 @@ namespace MyFitness.ViewModels
                     //new path
                     Positions.Add(position);
 
-                    await _locator.StartListeningAsync(TimeSpan.FromSeconds(5), 5);
+                    var listener = new ListenerSettings
+                    {
+                        ActivityType = ActivityType.AutomotiveNavigation,
+                        AllowBackgroundUpdates = true
+                    };
+
+                    await _locator.StartListeningAsync(TimeSpan.FromSeconds(2), 1, true, listener);
 
                     _locator.PositionChanged += CrossGeolocator_Current_PositionChanged;
                 }
@@ -139,29 +145,37 @@ namespace MyFitness.ViewModels
         /// </summary>
         private void SaveLastPath()
         {
-            if (Positions.Count > 5)
+            try
             {
-                List<Position> geoPositions = Positions
-                    .Select(p => new Position(p.Latitude, p.Longitude)).ToList();
-
-                Random rnd = new Random();
-
-                Polyline route = new Polyline
+                if (Positions.Count > 5)
                 {
-                    StrokeColor = Color.FromRgba(rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256)),
-                    StrokeWidth = 8
-                };
+                    List<Position> geoPositions = Positions
+                        .Select(p => new Position(p.Latitude, p.Longitude)).ToList();
 
-                route.Positions.AddRange(geoPositions);
+                    Random rnd = new Random();
 
-                MapView.Polylines.Add(route);
+                    Polyline route = new Polyline
+                    {
+                        StrokeColor = Color.FromRgba(rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256)),
+                        StrokeWidth = 8
+                    };
 
-                Route viewModel = new Route
-                {
-                    Value = JsonConvert.SerializeObject(route)
-                };
+                    route.Positions.AddRange(geoPositions);
 
-                repository.SaveItemAsync(viewModel);
+                    MapView.Polylines.Add(route);
+
+                    Route viewModel = new Route
+                    {
+                        Value = JsonConvert.SerializeObject(route)
+                    };
+
+                    repository.SaveItemAsync(viewModel);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Application.Current?.MainPage?.DisplayAlert("error", "error occured while saving" + e.InnerException, "OK", "Cancel");
             }
 
             Positions.Clear();
